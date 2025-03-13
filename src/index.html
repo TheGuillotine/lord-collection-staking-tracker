@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lord Collection Staking Tracker | Wild Forest</title>
+    <style>
+        :root {
+            --primary-color: #2a9d8f;
+            --secondary-color: #264653;
+            --accent-color: #e9c46a;
+            --background-color: #f1faee;
+            --text-color: #333;
+            --card-bg: #fff;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+        
+        header h1 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+        
+        header h2 {
+            color: var(--primary-color);
+            font-weight: normal;
+        }
+        
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .stat-card p {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .filter-section {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 40px;
+        }
+        
+        .filter-section h3 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        label {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+        
+        select, input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-width: 150px;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .stakers-section {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .stakers-section h3 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            align-items: center;
+        }
+        
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            color: #e63946;
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px 0;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+        
+        .address {
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .filters {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .filter-item {
+                width: 100%;
+            }
+            
+            button#apply-filters {
+                width: 100%;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Wild Forest: Lord Collection</h1>
+            <h2>Staking Tracker</h2>
+        </header>
+        
+        <main>
+            <section class="stats-section">
+                <div class="stat-card">
+                    <h3>Unique Stakers</h3>
+                    <p id="unique-stakers">--</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total NFTs Staked</h3>
+                    <p id="total-nfts">--</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Average Duration (days)</h3>
+                    <p id="avg-duration">--</p>
+                </div>
+            </section>
+            
+            <section class="filter-section">
+                <h3>Filters</h3>
+                <div class="filters">
+                    <div class="filter-item">
+                        <label for="nft-type">NFT Type:</label>
+                        <select id="nft-type">
+                            <option value="all">All Types</option>
+                            <!-- NFT types will be populated from the blockchain -->
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="min-duration">Min Duration (days):</label>
+                        <input type="number" id="min-duration" min="0" value="0">
+                    </div>
+                    <div class="filter-item">
+                        <label for="sort-by">Sort By:</label>
+                        <select id="sort-by">
+                            <option value="duration-desc">Duration (High to Low)</option>
+                            <option value="duration-asc">Duration (Low to High)</option>
+                            <option value="count-desc">NFT Count (High to Low)</option>
+                            <option value="count-asc">NFT Count (Low to High)</option>
+                        </select>
+                    </div>
+                    <button id="apply-filters">Apply Filters</button>
+                </div>
+            </section>
+            
+            <section class="stakers-section">
+                <h3>Stakers List</h3>
+                <div id="loader" class="loader"></div>
+                <div id="error-message" class="error-message"></div>
+                <table id="stakers-table">
+                    <thead>
+                        <tr>
+                            <th>Address</th>
+                            <th>NFT Types</th>
+                            <th>Total NFTs</th>
+                            <th>Total Duration (days)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stakers-list">
+                        <!-- Stakers will be listed here -->
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <button id="prev-page" disabled>Previous</button>
+                    <span id="page-info">Page 1</span>
+                    <button id="next-page">Next</button>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>Wild Forest Lord Collection Staking Tracker | Contract: <span class="address">0xfb597d6fa6c08f5434e6ecf69114497343ae13dd</span></p>
+        </footer>
+    </div>
+    
+    <!-- The JS bundle will be injected here by webpack -->
+</body>
+</html>
